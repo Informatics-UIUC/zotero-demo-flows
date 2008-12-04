@@ -2,14 +2,19 @@ package org.meandre.components.io.webservice;
 
 import java.io.IOException;
 import java.io.PrintStream;
-import java.util.Enumeration;
 import java.util.Hashtable;
+import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
 import java.util.concurrent.Semaphore;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.apache.commons.fileupload.FileItem;
+import org.apache.commons.fileupload.FileUploadException;
+import org.apache.commons.fileupload.disk.DiskFileItemFactory;
+import org.apache.commons.fileupload.servlet.ServletFileUpload;
 import org.meandre.annotations.Component;
 import org.meandre.annotations.ComponentOutput;
 import org.meandre.annotations.Component.Mode;
@@ -25,8 +30,8 @@ import org.meandre.webui.WebUIFragmentCallback;
 @Component(
 		baseURL = "meandre://seasr.org/components/zotero/", 
 		creator = "Xavier Llor&agrave", 
-		description = "Service head for a service that gets data via posts", 
-		name = "Service head post", tags = "WebUI, post, process request", 
+		description = "Service head for a service that gets data via posts with multipart", 
+		name = "Service head post multipart", tags = "WebUI, post, process request", 
 		mode = Mode.webui, firingPolicy = Component.FiringPolicy.all
 )
 // -------------------------------------------------------------------------
@@ -36,7 +41,7 @@ import org.meandre.webui.WebUIFragmentCallback;
  * 
  * @author Xavier Lor&agrave;
  */
-public class ServiceHeadPost implements ExecutableComponent,
+public class ServiceHeadPostMultipart implements ExecutableComponent,
 		WebUIFragmentCallback {
 
 	// -------------------------------------------------------------------------
@@ -112,18 +117,17 @@ public class ServiceHeadPost implements ExecutableComponent,
 		console.println("[INFO] Request recieved from " + request.getRemoteHost()
 				+ "/" + request.getRemoteAddr() + ":" + request.getRemotePort()
 				+ "[" + request.getRemoteUser() + "]");
-		
-		Map<String,byte[]> map = new Hashtable<String,byte[]>();
-		Enumeration mapRequest = request.getParameterNames();
-		while ( mapRequest.hasMoreElements() ) {
-			String sName = mapRequest.nextElement().toString();
-			String [] sa = request.getParameterValues(sName);
-			String sAcc = "";
-			for ( String s:sa ) sAcc+=s;
-			map.put(sName, sAcc.getBytes());
-		}
-		
+		ServletFileUpload upload = new ServletFileUpload(new DiskFileItemFactory());
+		List lstItems;
 		try {
+			lstItems = upload.parseRequest(request);
+			Iterator<FileItem> itr = lstItems.iterator();
+			Map<String,byte[]> map = new Hashtable<String,byte[]>();
+			while(itr.hasNext()) {
+				FileItem item = itr.next();
+				map.put(item.getFieldName(),item.get());
+				
+			}
 			Semaphore sem = new Semaphore(1, true);
 			sem.acquire();
 			ccHandle.pushDataComponentToOutput(OUTPUT_VALUEMAP, map);
@@ -131,6 +135,8 @@ public class ServiceHeadPost implements ExecutableComponent,
 			ccHandle.pushDataComponentToOutput(OUTPUT_SEMAPHORE, sem);
 			sem.acquire();
 			sem.release();
+		} catch (FileUploadException e) {
+			throw new WebUIException(e);
 		} catch (InterruptedException e) {
 			throw new WebUIException(e);
 		} catch (ComponentContextException e) {
