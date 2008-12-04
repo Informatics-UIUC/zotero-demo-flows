@@ -1,10 +1,10 @@
-import <file:///tmp/org/meandre/components/io/webservice/ServiceHeadPostRaw.rdf>
+import <file:///tmp/org/meandre/components/io/webservice/ServiceHeadPost.rdf>
 import <file:///tmp/org/meandre/components/io/webservice/ServiceTailString.rdf>
 import <file:///tmp/org/meandre/components/rdf/zotero/AuthorExtractor.rdf>
 import <file:///tmp/org/meandre/components/socialnetworking/SocialNetworkAnalysis.rdf>
 
 alias <meandre://seasr.org/components/zotero/author-extractor> as AE
-alias <meandre://seasr.org/components/zotero/service-head-post-raw> as SHP
+alias <meandre://seasr.org/components/zotero/service-head-post> as SHP
 alias <meandre://seasr.org/components/zotero/service-tail-text> as STS
 alias <meandre://seasr.org/components/zotero/social-network-analysis> as SNA
 

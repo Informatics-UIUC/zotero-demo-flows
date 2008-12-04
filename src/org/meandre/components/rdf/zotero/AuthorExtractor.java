@@ -74,13 +74,13 @@ public class AuthorExtractor implements ExecutableComponent {
 	throws ComponentExecutionException, ComponentContextException {
 		
 		Map<String,byte[]> map = (Map<String, byte[]>) cc.getDataComponentFromInput(INPUT_VALUEMAP);
-		List<Vector<String>> list = null;
+		List<Vector<String>> list = new LinkedList<Vector<String>>();
 		for ( String sKey:map.keySet() ) {
 			ByteArrayInputStream bais = new ByteArrayInputStream(map.get(sKey));
 			Model model = ModelFactory.createDefaultModel();
 			model.read(bais, null);
 			//model.write(System.out,"TTL",null);
-			list = pullGraph(model);
+			list.addAll(pullGraph(model));
 		}
 		
 		cc.pushDataComponentToOutput(OUTPUT_LIST_AUTHORS, list);
@@ -128,8 +128,8 @@ public class AuthorExtractor implements ExecutableComponent {
 			   sLastDocID = sDoc;    		   
     	   }
        }
-       if ( vec.size()>0 ) 
-		   vecRes.add(vec);
+       if ( vec==null ) vec = new Vector<String>();
+       if ( vec.size()>0 ) vecRes.add(vec);
 		  
        return vecRes;
 	}
