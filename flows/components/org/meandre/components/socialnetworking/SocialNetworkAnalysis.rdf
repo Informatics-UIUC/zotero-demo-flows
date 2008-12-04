@@ -1,0 +1,38 @@
+<rdf:RDF
+    xmlns="http://www.meandre.org/ontology/"
+    xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+    xmlns:xsd="http://www.w3.org/2001/XMLSchema#"
+    xmlns:rdfs="http://www.w3.org/2000/01/rdf-schema#"
+    xmlns:dc="http://purl.org/dc/elements/1.1/" > 
+  <rdf:Description rdf:about="meandre://seasr.org/components/zotero/social-network-analysis/output/report">
+    <dc:description rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A report of the social network analysis</dc:description>
+    <name rdf:datatype="http://www.w3.org/2001/XMLSchema#string">report</name>
+    <dc:identifier rdf:datatype="http://www.w3.org/2001/XMLSchema#string">meandre://seasr.org/components/zotero/social-network-analysis/output/report</dc:identifier>
+    <rdf:type rdf:resource="http://www.meandre.org/ontology/data_port"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="meandre://seasr.org/components/zotero/social-network-analysis">
+    <execution_context rdf:resource="meandre://seasr.org/components/zotero/social-network-analysis/implementation/"/>
+    <tag rdf:datatype="http://www.w3.org/2001/XMLSchema#string">zotero</tag>
+    <output_data_port rdf:resource="meandre://seasr.org/components/zotero/social-network-analysis/output/report"/>
+    <dc:format rdf:datatype="http://www.w3.org/2001/XMLSchema#string">java/class</dc:format>
+    <tag rdf:datatype="http://www.w3.org/2001/XMLSchema#string">social network analysis</tag>
+    <dc:date rdf:datatype="http://www.w3.org/2001/XMLSchema#dateTime">2008-12-04T00:00:54</dc:date>
+    <dc:description rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Given a collection of authors group by publication it generates a report based on the social network analysis</dc:description>
+    <dc:rights rdf:datatype="http://www.w3.org/2001/XMLSchema#string">University of Illinois/NCSA Open Source License</dc:rights>
+    <mode rdf:resource="http://www.meandre.org/ontology/component/type/compute"/>
+    <input_data_port rdf:resource="meandre://seasr.org/components/zotero/social-network-analysis/input/list_authors"/>
+    <name rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Social network analysis</name>
+    <resource_location rdf:resource="meandre://seasr.org/components/zotero/social-network-analysis/implementation/org.meandre.components.socialnetworking.SocialNetworkAnalysis"/>
+    <tag rdf:datatype="http://www.w3.org/2001/XMLSchema#string">authors</tag>
+    <firing_policy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">all</firing_policy>
+    <runnable rdf:datatype="http://www.w3.org/2001/XMLSchema#string">java</runnable>
+    <dc:creator rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Xavier Llor&amp;agrave</dc:creator>
+    <rdf:type rdf:resource="http://www.meandre.org/ontology/executable_component"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="meandre://seasr.org/components/zotero/social-network-analysis/input/list_authors">
+    <dc:description rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A list of vectors containing the names of the authors. There is one vector foreach entry</dc:description>
+    <name rdf:datatype="http://www.w3.org/2001/XMLSchema#string">list_authors</name>
+    <dc:identifier rdf:datatype="http://www.w3.org/2001/XMLSchema#string">meandre://seasr.org/components/zotero/social-network-analysis/input/list_authors</dc:identifier>
+    <rdf:type rdf:resource="http://www.meandre.org/ontology/data_port"/>
+  </rdf:Description>
+</rdf:RDF>

@@ -1,0 +1,45 @@
+<rdf:RDF
+    xmlns="http://www.meandre.org/ontology/"
+    xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+    xmlns:xsd="http://www.w3.org/2001/XMLSchema#"
+    xmlns:rdfs="http://www.w3.org/2000/01/rdf-schema#"
+    xmlns:dc="http://purl.org/dc/elements/1.1/" > 
+  <rdf:Description rdf:about="meandre://seasr.org/components/zotero/service-tail-text">
+    <mode rdf:resource="http://www.meandre.org/ontology/component/type/compute"/>
+    <tag rdf:datatype="http://www.w3.org/2001/XMLSchema#string">process request</tag>
+    <resource_location rdf:resource="meandre://seasr.org/components/zotero/service-tail-text/implementation/org.meandre.components.io.webservice.ServiceTailString"/>
+    <input_data_port rdf:resource="meandre://seasr.org/components/zotero/service-tail-text/input/string"/>
+    <execution_context rdf:resource="meandre://seasr.org/components/zotero/service-tail-text/implementation/"/>
+    <runnable rdf:datatype="http://www.w3.org/2001/XMLSchema#string">java</runnable>
+    <firing_policy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">all</firing_policy>
+    <name rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Service tail text</name>
+    <input_data_port rdf:resource="meandre://seasr.org/components/zotero/service-tail-text/input/semaphore"/>
+    <dc:description rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Service tail for a web service</dc:description>
+    <tag rdf:datatype="http://www.w3.org/2001/XMLSchema#string">post</tag>
+    <input_data_port rdf:resource="meandre://seasr.org/components/zotero/service-tail-text/input/response"/>
+    <tag rdf:datatype="http://www.w3.org/2001/XMLSchema#string">webui</tag>
+    <rdf:type rdf:resource="http://www.meandre.org/ontology/executable_component"/>
+    <dc:rights rdf:datatype="http://www.w3.org/2001/XMLSchema#string">University of Illinois/NCSA Open Source License</dc:rights>
+    <dc:format rdf:datatype="http://www.w3.org/2001/XMLSchema#string">java/class</dc:format>
+    <dc:date rdf:datatype="http://www.w3.org/2001/XMLSchema#dateTime">2008-12-03T21:29:13</dc:date>
+    <dc:creator rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Xavier Llor&amp;agrave</dc:creator>
+  </rdf:Description>
+  <rdf:Description rdf:about="meandre://seasr.org/components/zotero/service-tail-text/input/response">
+    <dc:description rdf:datatype="http://www.w3.org/2001/XMLSchema#string">The response sent by the Service Head.</dc:description>
+    <name rdf:datatype="http://www.w3.org/2001/XMLSchema#string">response</name>
+    <dc:identifier rdf:datatype="http://www.w3.org/2001/XMLSchema#string">meandre://seasr.org/components/zotero/service-tail-text/input/response</dc:identifier>
+    <rdf:type rdf:resource="http://www.meandre.org/ontology/data_port"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="meandre://seasr.org/components/zotero/service-tail-text/input/string">
+    <dc:description rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A string containing the output to response</dc:description>
+    <name rdf:datatype="http://www.w3.org/2001/XMLSchema#string">string</name>
+    <dc:identifier rdf:datatype="http://www.w3.org/2001/XMLSchema#string">meandre://seasr.org/components/zotero/service-tail-text/input/string</dc:identifier>
+    <rdf:type rdf:resource="http://www.meandre.org/ontology/data_port"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="meandre://seasr.org/components/zotero/service-tail-text/input/semaphore">
+    <dc:description rdf:datatype="http://www.w3.org/2001/XMLSchema#string">The semaphore to signal the response was sent.</dc:description>
+    <name rdf:datatype="http://www.w3.org/2001/XMLSchema#string">semaphore</name>
+    <dc:identifier rdf:datatype="http://www.w3.org/2001/XMLSchema#string">meandre://seasr.org/components/zotero/service-tail-text/input/semaphore</dc:identifier>
+    <rdf:type rdf:resource="http://www.meandre.org/ontology/data_port"/>
+  </rdf:Description>
+</rdf:RDF>

@@ -1,0 +1,45 @@
+<rdf:RDF
+    xmlns="http://www.meandre.org/ontology/"
+    xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+    xmlns:xsd="http://www.w3.org/2001/XMLSchema#"
+    xmlns:rdfs="http://www.w3.org/2000/01/rdf-schema#"
+    xmlns:dc="http://purl.org/dc/elements/1.1/" > 
+  <rdf:Description rdf:about="meandre://seasr.org/components/zotero/service-head-post-raw">
+    <tag rdf:datatype="http://www.w3.org/2001/XMLSchema#string">process request</tag>
+    <mode rdf:resource="http://www.meandre.org/ontology/component/type/webui"/>
+    <resource_location rdf:resource="meandre://seasr.org/components/zotero/service-head-post-raw/implementation/org.meandre.components.io.webservice.ServiceHeadPostRaw"/>
+    <rdf:type rdf:resource="http://www.meandre.org/ontology/executable_component"/>
+    <dc:description rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Service head for a service that gets data via posts and reads a raw stream</dc:description>
+    <tag rdf:datatype="http://www.w3.org/2001/XMLSchema#string">webui</tag>
+    <execution_context rdf:resource="meandre://seasr.org/components/zotero/service-head-post-raw/implementation/"/>
+    <dc:rights rdf:datatype="http://www.w3.org/2001/XMLSchema#string">University of Illinois/NCSA Open Source License</dc:rights>
+    <name rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Service head post raw</name>
+    <dc:date rdf:datatype="http://www.w3.org/2001/XMLSchema#dateTime">2008-12-04T10:37:42</dc:date>
+    <output_data_port rdf:resource="meandre://seasr.org/components/zotero/service-head-post-raw/output/response"/>
+    <runnable rdf:datatype="http://www.w3.org/2001/XMLSchema#string">java</runnable>
+    <tag rdf:datatype="http://www.w3.org/2001/XMLSchema#string">raw post</tag>
+    <dc:format rdf:datatype="http://www.w3.org/2001/XMLSchema#string">java/class</dc:format>
+    <output_data_port rdf:resource="meandre://seasr.org/components/zotero/service-head-post-raw/output/semaphore"/>
+    <output_data_port rdf:resource="meandre://seasr.org/components/zotero/service-head-post-raw/output/value_map"/>
+    <firing_policy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">all</firing_policy>
+    <dc:creator rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Xavier Llor&amp;agrave</dc:creator>
+  </rdf:Description>
+  <rdf:Description rdf:about="meandre://seasr.org/components/zotero/service-head-post-raw/output/value_map">
+    <dc:description rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A map object containing the key elements on the request and the assiciated values</dc:description>
+    <name rdf:datatype="http://www.w3.org/2001/XMLSchema#string">value_map</name>
+    <dc:identifier rdf:datatype="http://www.w3.org/2001/XMLSchema#string">meandre://seasr.org/components/zotero/service-head-post-raw/output/value_map</dc:identifier>
+    <rdf:type rdf:resource="http://www.meandre.org/ontology/data_port"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="meandre://seasr.org/components/zotero/service-head-post-raw/output/response">
+    <dc:description rdf:datatype="http://www.w3.org/2001/XMLSchema#string">The response to be sent to the Service Tail Post.</dc:description>
+    <name rdf:datatype="http://www.w3.org/2001/XMLSchema#string">response</name>
+    <dc:identifier rdf:datatype="http://www.w3.org/2001/XMLSchema#string">meandre://seasr.org/components/zotero/service-head-post-raw/output/response</dc:identifier>
+    <rdf:type rdf:resource="http://www.meandre.org/ontology/data_port"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="meandre://seasr.org/components/zotero/service-head-post-raw/output/semaphore">
+    <dc:description rdf:datatype="http://www.w3.org/2001/XMLSchema#string">The semaphore to signal the response was sent.</dc:description>
+    <name rdf:datatype="http://www.w3.org/2001/XMLSchema#string">semaphore</name>
+    <dc:identifier rdf:datatype="http://www.w3.org/2001/XMLSchema#string">meandre://seasr.org/components/zotero/service-head-post-raw/output/semaphore</dc:identifier>
+    <rdf:type rdf:resource="http://www.meandre.org/ontology/data_port"/>
+  </rdf:Description>
+</rdf:RDF>
