@@ -1,12 +1,15 @@
 import <file:///tmp/org/meandre/components/io/webservice/ServiceHeadPost.rdf>
 import <file:///tmp/org/meandre/components/io/webservice/ServiceTailString.rdf>
 import <file:///tmp/org/meandre/components/rdf/zotero/AuthorExtractor.rdf>
+import <file:///tmp/org/meandre/components/socialnetworking/SocialNetworkAnalysis.rdf>
 
 alias <meandre://seasr.org/components/zotero/author-extractor> as AE
 alias <meandre://seasr.org/components/zotero/service-head-post> as SHP
 alias <meandre://seasr.org/components/zotero/service-tail-text> as STS
+alias <meandre://seasr.org/components/zotero/social-network-analysis> as SNA
 
-ae,shp,sts = AE(),SHP(),STS()
+ae,shp,sts,sna = AE(),SHP(),STS(),SNA()
 @head = shp()
 @authors = ae(value_map:head.value_map)
-sts(string:authors.list_authors;response:head.response;semaphore:head.semaphore)
+@report = sna(list_authors:authors.list_authors)
+sts(string:report.report;response:head.response;semaphore:head.semaphore)

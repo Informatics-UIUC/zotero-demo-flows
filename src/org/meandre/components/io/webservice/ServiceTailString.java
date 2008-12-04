@@ -68,14 +68,12 @@ public class ServiceTailString implements ExecutableComponent {
 	public void execute(ComponentContext cc)
 			throws ComponentExecutionException, ComponentContextException {
 
-		String sResponse = cc.getDataComponentFromInput(INPUT_RESPONSE).toString();
+		String sResponse = cc.getDataComponentFromInput(INPUT_STRING).toString();
 		Semaphore sem = (Semaphore) cc.getDataComponentFromInput(INPUT_SEMAPHORE);
 		HttpServletResponse response = (HttpServletResponse) cc.getDataComponentFromInput(INPUT_RESPONSE);
 		PrintStream ccHandle = cc.getOutputConsole();
 		
 		ccHandle.println("[INFO] Sending requested results");
-		
-		response.setContentType("text/plain");
 		try {
 			PrintWriter pw = response.getWriter();
 			pw.println(sResponse.toString());

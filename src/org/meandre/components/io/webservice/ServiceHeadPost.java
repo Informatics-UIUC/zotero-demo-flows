@@ -104,7 +104,7 @@ public class ServiceHeadPost implements ExecutableComponent,
 	public void emptyRequest(HttpServletResponse response)
 			throws WebUIException {
 		try {
-			console.println("[WARNING] Request recieved");
+			console.println("[WARNING] Empty request recieved");
 			response.sendError(HttpServletResponse.SC_EXPECTATION_FAILED);
 		} catch (IOException e) {
 			throw new WebUIException(e);
