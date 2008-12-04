@@ -1,0 +1,12 @@
+import <file:///tmp/org/meandre/components/io/webservice/ServiceHeadPost.rdf>
+import <file:///tmp/org/meandre/components/io/webservice/ServiceTailString.rdf>
+import <file:///tmp/org/meandre/components/rdf/zotero/AuthorExtractor.rdf>
+
+alias <meandre://seasr.org/components/zotero/author-extractor> as AE
+alias <meandre://seasr.org/components/zotero/service-head-post> as SHP
+alias <meandre://seasr.org/components/zotero/service-tail-text> as STS
+
+ae,shp,sts = AE(),SHP(),STS()
+@head = shp()
+@authors = ae(value_map:head.value_map)
+sts(string:authors.list_authors;response:head.response;semaphore:head.semaphore)
