@@ -12,11 +12,11 @@
   </rdf:Description>
   <rdf:Description rdf:about="meandre://seasr.org/components/zotero/social-network-analysis">
     <execution_context rdf:resource="meandre://seasr.org/components/zotero/social-network-analysis/implementation/"/>
+    <dc:date rdf:datatype="http://www.w3.org/2001/XMLSchema#dateTime">2008-12-12T15:08:57</dc:date>
     <tag rdf:datatype="http://www.w3.org/2001/XMLSchema#string">zotero</tag>
     <output_data_port rdf:resource="meandre://seasr.org/components/zotero/social-network-analysis/output/report"/>
     <dc:format rdf:datatype="http://www.w3.org/2001/XMLSchema#string">java/class</dc:format>
     <tag rdf:datatype="http://www.w3.org/2001/XMLSchema#string">social network analysis</tag>
-    <dc:date rdf:datatype="http://www.w3.org/2001/XMLSchema#dateTime">2008-12-04T00:00:54</dc:date>
     <dc:description rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Given a collection of authors group by publication it generates a report based on the social network analysis</dc:description>
     <dc:rights rdf:datatype="http://www.w3.org/2001/XMLSchema#string">University of Illinois/NCSA Open Source License</dc:rights>
     <mode rdf:resource="http://www.meandre.org/ontology/component/type/compute"/>

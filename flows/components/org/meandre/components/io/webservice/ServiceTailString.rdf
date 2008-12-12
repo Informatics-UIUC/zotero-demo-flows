@@ -20,8 +20,8 @@
     <tag rdf:datatype="http://www.w3.org/2001/XMLSchema#string">webui</tag>
     <rdf:type rdf:resource="http://www.meandre.org/ontology/executable_component"/>
     <dc:rights rdf:datatype="http://www.w3.org/2001/XMLSchema#string">University of Illinois/NCSA Open Source License</dc:rights>
+    <dc:date rdf:datatype="http://www.w3.org/2001/XMLSchema#dateTime">2008-12-12T15:08:44</dc:date>
     <dc:format rdf:datatype="http://www.w3.org/2001/XMLSchema#string">java/class</dc:format>
-    <dc:date rdf:datatype="http://www.w3.org/2001/XMLSchema#dateTime">2008-12-03T21:29:13</dc:date>
     <dc:creator rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Xavier Llor&amp;agrave</dc:creator>
   </rdf:Description>
   <rdf:Description rdf:about="meandre://seasr.org/components/zotero/service-tail-text/input/response">

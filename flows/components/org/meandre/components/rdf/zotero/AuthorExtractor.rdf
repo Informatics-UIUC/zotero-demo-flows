@@ -14,7 +14,7 @@
     <dc:description rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Extract the authors for each entry of a Zotero RDF</dc:description>
     <firing_policy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">all</firing_policy>
     <execution_context rdf:resource="meandre://seasr.org/components/zotero/author-extractor/implementation/"/>
-    <dc:date rdf:datatype="http://www.w3.org/2001/XMLSchema#dateTime">2008-12-03T21:30:29</dc:date>
+    <dc:date rdf:datatype="http://www.w3.org/2001/XMLSchema#dateTime">2008-12-12T15:08:51</dc:date>
     <name rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Author extractor</name>
     <resource_location rdf:resource="meandre://seasr.org/components/zotero/author-extractor/implementation/org.meandre.components.rdf.zotero.AuthorExtractor"/>
     <tag rdf:datatype="http://www.w3.org/2001/XMLSchema#string">authors</tag>

@@ -14,7 +14,7 @@
     <execution_context rdf:resource="meandre://seasr.org/components/zotero/service-head-post-raw/implementation/"/>
     <dc:rights rdf:datatype="http://www.w3.org/2001/XMLSchema#string">University of Illinois/NCSA Open Source License</dc:rights>
     <name rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Service head post raw</name>
-    <dc:date rdf:datatype="http://www.w3.org/2001/XMLSchema#dateTime">2008-12-04T10:37:42</dc:date>
+    <dc:date rdf:datatype="http://www.w3.org/2001/XMLSchema#dateTime">2008-12-12T15:08:36</dc:date>
     <output_data_port rdf:resource="meandre://seasr.org/components/zotero/service-head-post-raw/output/response"/>
     <runnable rdf:datatype="http://www.w3.org/2001/XMLSchema#string">java</runnable>
     <tag rdf:datatype="http://www.w3.org/2001/XMLSchema#string">raw post</tag>

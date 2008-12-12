@@ -18,8 +18,8 @@
     <dc:rights rdf:datatype="http://www.w3.org/2001/XMLSchema#string">University of Illinois/NCSA Open Source License</dc:rights>
     <tag rdf:datatype="http://www.w3.org/2001/XMLSchema#string">post</tag>
     <rdf:type rdf:resource="http://www.meandre.org/ontology/executable_component"/>
-    <dc:date rdf:datatype="http://www.w3.org/2001/XMLSchema#dateTime">2008-12-04T10:07:23</dc:date>
     <dc:format rdf:datatype="http://www.w3.org/2001/XMLSchema#string">java/class</dc:format>
+    <dc:date rdf:datatype="http://www.w3.org/2001/XMLSchema#dateTime">2008-12-12T15:08:20</dc:date>
     <dc:description rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Service head for a service that gets data via posts with multipart</dc:description>
     <mode rdf:resource="http://www.meandre.org/ontology/component/type/webui"/>
     <dc:creator rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Xavier Llor&amp;agrave</dc:creator>

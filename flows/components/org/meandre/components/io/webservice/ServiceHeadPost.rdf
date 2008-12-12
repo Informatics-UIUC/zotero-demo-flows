@@ -28,12 +28,12 @@
     <resource_location rdf:resource="meandre://seasr.org/components/zotero/service-head-post/implementation/org.meandre.components.io.webservice.ServiceHeadPost"/>
     <firing_policy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">all</firing_policy>
     <dc:creator rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Xavier Llor&amp;agrave</dc:creator>
-    <dc:date rdf:datatype="http://www.w3.org/2001/XMLSchema#dateTime">2008-12-03T21:30:14</dc:date>
     <rdf:type rdf:resource="http://www.meandre.org/ontology/executable_component"/>
     <output_data_port rdf:resource="meandre://seasr.org/components/zotero/service-head-post/output/semaphore"/>
     <output_data_port rdf:resource="meandre://seasr.org/components/zotero/service-head-post/output/value_map"/>
     <name rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Service head post</name>
     <execution_context rdf:resource="meandre://seasr.org/components/zotero/service-head-post/implementation/"/>
+    <dc:date rdf:datatype="http://www.w3.org/2001/XMLSchema#dateTime">2008-12-12T15:07:57</dc:date>
     <tag rdf:datatype="http://www.w3.org/2001/XMLSchema#string">process request</tag>
   </rdf:Description>
   <rdf:Description rdf:about="meandre://seasr.org/components/zotero/service-head-post/output/semaphore">
