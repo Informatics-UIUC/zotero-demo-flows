@@ -1,0 +1,13 @@
+#import <http://norma.ncsa.uiuc.edu/public-dav/Meandre/demos/betweenness-of-authors2/repository.ttl>
+import <http://norma.ncsa.uiuc.edu/public-dav/Meandre/demos/zotero/repository.ttl>
+
+alias <meandre://seasr.org/components/zotero/author-extractor> as AE
+alias <meandre://seasr.org/components/zotero/service-head-post> as SHP
+alias <meandre://seasr.org/components/zotero/service-tail-text> as STS
+alias <meandre://seasr.org/components/zotero/author-centrality-analysis> as SNA
+
+ae,shp,sts,sna = AE(),SHP(),STS(),SNA()
+@head = shp()
+@authors = ae(value_map:head.value_map)
+@report = sna(list_authors:authors.list_authors)
+sts(string:report.report;response:head.response;semaphore:head.semaphore)
