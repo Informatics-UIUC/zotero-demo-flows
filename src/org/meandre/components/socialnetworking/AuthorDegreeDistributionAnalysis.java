@@ -15,7 +15,7 @@ import org.meandre.core.ComponentExecutionException;
 import org.meandre.core.ExecutableComponent;
 
 import edu.uci.ics.jung.algorithms.importance.AbstractRanker;
-import edu.uci.ics.jung.algorithms.importance.BetweennessCentrality;
+import edu.uci.ics.jung.algorithms.importance.DegreeDistributionRanker;
 import edu.uci.ics.jung.algorithms.importance.NodeRanking;
 import edu.uci.ics.jung.graph.Graph;
 import edu.uci.ics.jung.graph.impl.UndirectedSparseEdge;
@@ -28,8 +28,11 @@ import edu.uci.ics.jung.utils.UserData;
 @Component(
 		baseURL = "meandre://seasr.org/components/zotero/", 
 		creator = "Xavier Llor&agrave", 
-		description = "Given a collection of authors group by publication it generates a report based on the social network analysis", 
-		name = "Social network analysis", tags = "zotero, authors, social network analysis", 
+		description = "Given a collection of authors, grouped by publication, this component "+
+		"generates a report based on the social network analysis. This analysis uses the JUNG "+
+		"network importance algorithms to rank the authors. This component uses AuthorDegreeDistributionAnalysis, which " +
+		"ranks each author based on the degree of the node.", 
+		name = "Author Degree Distribution Analysis", tags = "zotero, authors, social network analysis", 
 		mode = Mode.compute, firingPolicy = Component.FiringPolicy.all
 )
 //-------------------------------------------------------------------------
@@ -37,24 +40,22 @@ import edu.uci.ics.jung.utils.UserData;
 /**
 *  This class extracts the list of authors per entry from a Zotero RDF
 * 
-* @author Xavier Lor&agrave;
+* @author Xavier Llor&agrave;
 */
-public class SocialNetworkAnalysis implements ExecutableComponent {
-
-
+public class AuthorDegreeDistributionAnalysis implements ExecutableComponent {
 
 	private static final String AUTHOR = "Author";
 
 	// -------------------------------------------------------------------------
 
 	@ComponentInput(
-			description = "A list of vectors containing the names of the authors. There is one vector foreach entry", 
+			description = "A list of vectors containing the names of the authors. There is one vector for each entry.", 
 			name = "list_authors"
 	)
 	public final static String INPUT_LISTAUTHORS = "list_authors";
 	
 	@ComponentOutput(
-			description = "A report of the social network analysis", 
+			description = "A report of the social network analysis.", 
 			name = "report"
 	)
 	public final static String OUTPUT_REPORT = "report";
@@ -75,15 +76,20 @@ public class SocialNetworkAnalysis implements ExecutableComponent {
 		List<Vector<String>> listAuthors = (List<Vector<String>>) cc.getDataComponentFromInput(INPUT_LISTAUTHORS);
 		
 		Graph g = buildGraph(listAuthors);
-		AbstractRanker bc = computeBetweennes(g);
-		generateBCReport(sbReport,bc);
+		AbstractRanker rank = computeRank(g);
+		generateReport(sbReport,rank);
 		
 		cc.pushDataComponentToOutput(OUTPUT_REPORT, sbReport.toString());
 	}
 
-	private void generateBCReport(StringBuffer sbReport, AbstractRanker bc) {
+	private void generateReport(StringBuffer sbReport, AbstractRanker rank) {
 		sbReport.append("<table>");
-		for ( Object or:bc.getRankings() ) {
+		sbReport.append("<tr><td>");
+		sbReport.append("<strong>Author</strong>");
+		sbReport.append("</td><td>");
+		sbReport.append("<strong>Degree Distribution</strong>");
+		sbReport.append("</tr>");
+		for ( Object or:rank.getRankings() ) {
 			NodeRanking nr = (NodeRanking) or;
 			sbReport.append("<tr><td>");
 			sbReport.append(nr.vertex.getUserDatum(AUTHOR));
@@ -94,10 +100,10 @@ public class SocialNetworkAnalysis implements ExecutableComponent {
 		sbReport.append("</table>");
 	}
 
-	private AbstractRanker computeBetweennes(Graph g) {
-		BetweennessCentrality rBC = new BetweennessCentrality(g,true,false);
-		rBC.evaluate();
-		return rBC;
+	private AbstractRanker computeRank(Graph g) {
+		DegreeDistributionRanker ranker = new DegreeDistributionRanker(g);
+		ranker.evaluate();
+		return ranker;
 	}
 
 	private Graph buildGraph(List<Vector<String>> listAuthors) {
@@ -130,6 +136,4 @@ public class SocialNetworkAnalysis implements ExecutableComponent {
 			
 		return g;
 	}
-
-
 }
