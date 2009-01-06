@@ -41,7 +41,7 @@ import edu.uci.ics.jung.utils.UserData;
 /**
  *  This class extracts the list of authors per entry from a Zotero RDF
  * 
- * @author Xavier Lor&agrave;
+ * @author Xavier Llor&agrave;
  */
 public class AuthorCentralityAnalysis implements ExecutableComponent {
 
