@@ -1,5 +1,8 @@
 package org.meandre.components.readability.measures;
 
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
 import java.util.StringTokenizer;
 
 import org.json.JSONException;
@@ -45,10 +48,10 @@ implements ExecutableComponent {
 	// -------------------------------------------------------------------------
 
 	@ComponentInput(
-			description = "A string containing the text to measure", 
-			name = "Text"
+			description = "The list of the entries to process", 
+			name = "list_entries"
 	)
-	public final static String INPUT_TEXT = "Text";
+	public final static String INPUT_ENTRIES = "list_entries";
 	
 	@ComponentOutput(
 			description = "A report of the social network analysis.", 
@@ -69,17 +72,33 @@ implements ExecutableComponent {
 	}
 
 
+	@SuppressWarnings("unchecked")
 	public void execute(ComponentContext cc) 
 	throws ComponentExecutionException, ComponentContextException {
-		String sContent = cc.getDataComponentFromInput(INPUT_TEXT).toString();
-		JSONObject json = computeMeasure(sContent);
-		cc.pushDataComponentToOutput(OUTPUT_REPORT, renerateReport(json));
+		List<Map<String,String>> lst = (List<Map<String,String>>)cc.getDataComponentFromInput(INPUT_ENTRIES);
+		
+		StringBuffer sb = new StringBuffer();
+		sb.append("<h1>Readability analysis</h1>");
+		Iterator<Map<String, String>> iter = lst.iterator();
+		while ( iter.hasNext() ) {
+			Map<String, String> map = iter.next();
+			sb.append("<h2>"+map.get("title")+"</h2>");
+			JSONObject json = computeMeasure(map.get("content"));
+			sb.append(renerateReport(map.get("url"),json)+"<br/>");
+			
+		}
+		cc.pushDataComponentToOutput(OUTPUT_REPORT, sb.toString());
 	}
 	
-	private String renerateReport(JSONObject json) {
+	private String renerateReport(String sURL, JSONObject json) {
 		StringBuffer sbReport = new StringBuffer();
 		
 		sbReport.append("<table>");
+		
+		sbReport.append("<tr><td colspan=\"2\">");
+		sbReport.append("(<a href=\""+sURL+"\">"+sURL+"</a>)");
+		sbReport.append("</td></tr>");
+		
 		sbReport.append("<tr><td colspan=\"2\">");
 		sbReport.append("<strong>Flesch Kincaid Readability Measure</strong>");
 		sbReport.append("</td></tr>");

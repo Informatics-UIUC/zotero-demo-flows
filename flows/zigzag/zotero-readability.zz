@@ -1,0 +1,18 @@
+#import <file:///tmp/org/meandre/components/readability/measures/FleschKincaidReadabilityMeasure.rdf>
+#import <file:///tmp/org/meandre/components/rdf/zotero/URLsExtractor.rdf>
+#import <file:///tmp/org/meandre/components/io/webservice/ServiceHeadPost.rdf>
+#import <file:///tmp/org/meandre/components/io/webservice/ServiceTailString.rdf>
+import <http://edward4.ncsa.uiuc.edu:1714/public/services/repository.ttl>
+
+
+alias <meandre://seasr.org/components/zotero/urls-extractor> as UE
+alias <meandre://seasr.org/components/zotero/service-head-post> as SHP
+alias <meandre://seasr.org/components/zotero/service-tail-text> as STS
+alias <meandre://seasr.org/components/zotero/flesch-kincaid-readability-measure> as FKRM
+
+
+ue,shp,sts,fkrm = UE(),SHP(),STS(),FKRM()
+@head = shp()
+@urls = ue(value_map:head.value_map)
+@report = fkrm(list_entries:urls.list_entries)
+sts(string:report.report;response:head.response;semaphore:head.semaphore)
