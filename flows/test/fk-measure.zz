@@ -1,0 +1,21 @@
+import <http://repository.seasr.org/Meandre/Locations/1.4/Demo-Components/repository_components.ttl>
+import <http://demo.seasr.org:1714/public/services/demo_repository.ttl>
+import <file:///tmp/org/meandre/components/readability/measures/FleschKincaidReadabilityMeasure.rdf>
+
+alias <meandre://seasr.org/components/urlfetcher> as PULL_URL
+alias <meandre://seasr.org/components/streamcontentreader> as READ_CONTENT
+alias <meandre://seasr.org/components/html2text> as HTML_TO_TEXT
+alias <meandre://seasr.org/components/zotero/flesch-kincaid-readability-measure> as FKRM
+alias <meandre://test.org/component/print-object> as PRINT_CONTENT
+
+pull_url,read_content,html_to_text,fkrm = PULL_URL(),READ_CONTENT(),HTML_TO_TEXT(),FKRM()
+print = PRINT_CONTENT()
+
+@url = pull_url()
+@content = read_content(Stream:url.Stream)
+@text = html_to_text(Html:content.Object)
+@rep = fkrm(Text:text.Text)
+
+print(object:rep.report)
+
+pull_url.location = "http://www.gutenberg.org/files/4300/4300.txt"

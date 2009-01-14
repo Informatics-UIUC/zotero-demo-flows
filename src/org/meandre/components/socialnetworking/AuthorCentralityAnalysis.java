@@ -91,14 +91,14 @@ public class AuthorCentralityAnalysis implements ExecutableComponent {
 		sbReport.append("<strong>Author</strong>");
 		sbReport.append("</td><td>");
 		sbReport.append("<strong>Betweenness Centrality</strong>");
-		sbReport.append("</tr>");
+		sbReport.append("</td></tr>");
 		for ( Object or:bc.getRankings() ) {
 			NodeRanking nr = (NodeRanking) or;
 			sbReport.append("<tr><td>");
 			sbReport.append(nr.vertex.getUserDatum(AUTHOR));
 			sbReport.append("</td><td>");
 			sbReport.append(nr.rankScore);
-			sbReport.append("</tr>");
+			sbReport.append("</td></tr>");
 		}
 		sbReport.append("</table>");
 	}

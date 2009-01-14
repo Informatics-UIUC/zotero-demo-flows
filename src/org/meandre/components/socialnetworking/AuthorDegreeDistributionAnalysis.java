@@ -88,14 +88,14 @@ public class AuthorDegreeDistributionAnalysis implements ExecutableComponent {
 		sbReport.append("<strong>Author</strong>");
 		sbReport.append("</td><td>");
 		sbReport.append("<strong>Degree Distribution</strong>");
-		sbReport.append("</tr>");
+		sbReport.append("</td></tr>");
 		for ( Object or:rank.getRankings() ) {
 			NodeRanking nr = (NodeRanking) or;
 			sbReport.append("<tr><td>");
 			sbReport.append(nr.vertex.getUserDatum(AUTHOR));
 			sbReport.append("</td><td>");
 			sbReport.append(nr.rankScore);
-			sbReport.append("</tr>");
+			sbReport.append("</td></tr>");
 		}
 		sbReport.append("</table>");
 	}
