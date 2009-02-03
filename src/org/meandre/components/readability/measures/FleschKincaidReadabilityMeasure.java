@@ -19,25 +19,27 @@ import org.meandre.core.ExecutableComponent;
 
 /** This class implements the Flesch Kincaid Readability measure as explained
  * at http://en.wikipedia.org/wiki/Flesch-Kincaid_Readability_Test. The code is
- * based on the work done by Daniel Shiffman at 
+ * based on the work done by Daniel Shiffman at
  * http://www.shiffman.net/teaching/a2z/week1/
- * 
+ *
  * @author Xavier Llor&agrave;
  *
  */
-//------------------------------------------------------------------------- 
+//-------------------------------------------------------------------------
 @Component(
-		baseURL = "meandre://seasr.org/components/zotero/", 
-		creator = "Xavier Llor&agrave", 
-		description = "Computes the Flesch Kincaid readability measure as explained at http://en.wikipedia.org/wiki/Flesch-Kincaid_Readability_Test. The code is based on the work done by Daniel Shiffman at http://www.shiffman.net/teaching/a2z/week1/", 
-		name = "Flesch Kincaid readability measure", tags = "zotero, text, readability, measure", 
+		baseURL = "meandre://seasr.org/components/zotero/",
+		creator = "Xavier Llor&agrave",
+		description = "Computes the Flesch Kincaid readability measure as explained at http://en.wikipedia.org/wiki/Flesch-Kincaid_Readability_Test. The code is based on the work done by Daniel Shiffman at http://www.shiffman.net/teaching/a2z/week1/",
+		name = "Flesch Kincaid readability measure", tags = "zotero, text, readability, measure",
 		mode = Mode.compute, firingPolicy = Component.FiringPolicy.all
 )
 //-------------------------------------------------------------------------
-public class FleschKincaidReadabilityMeasure 
+public class FleschKincaidReadabilityMeasure
 implements ExecutableComponent {
 
-	private static final String FLESCH_INDEX = "Flesch Index";
+	private static final String FRES = "Flesch Reading Ease Score";
+
+	private static final String FGL = "Flesch Grade Level";
 
 	private static final String TOTAL_SENTENCES = "Total Sentences";
 
@@ -45,16 +47,18 @@ implements ExecutableComponent {
 
 	private static final String TOTAL_SYLLABLES = "Total Syllables";
 
+	private static final String FLESCH_KINCAID_WIKIPEDIA_URL = "http://en.wikipedia.org/wiki/Flesch-Kincaid_Readability_Test";
+
 	// -------------------------------------------------------------------------
 
 	@ComponentInput(
-			description = "The list of the entries to process", 
+			description = "The list of the entries to process",
 			name = "list_entries"
 	)
 	public final static String INPUT_ENTRIES = "list_entries";
-	
+
 	@ComponentOutput(
-			description = "A report of the social network analysis.", 
+			description = "A report of the social network analysis.",
 			name = "report"
 	)
 	public final static String OUTPUT_REPORT = "report";
@@ -73,36 +77,37 @@ implements ExecutableComponent {
 
 
 	@SuppressWarnings("unchecked")
-	public void execute(ComponentContext cc) 
+	public void execute(ComponentContext cc)
 	throws ComponentExecutionException, ComponentContextException {
 		List<Map<String,String>> lst = (List<Map<String,String>>)cc.getDataComponentFromInput(INPUT_ENTRIES);
-		
+
 		StringBuffer sb = new StringBuffer();
 		sb.append("<h1>Readability analysis</h1>");
 		Iterator<Map<String, String>> iter = lst.iterator();
 		while ( iter.hasNext() ) {
 			Map<String, String> map = iter.next();
-			sb.append("<h2>"+map.get("title")+"</h2>");
+			String surl = map.get("url");
+			sb.append("<h2><a href='" + surl + "'>" + map.get("title") + "</a></h2>");
 			JSONObject json = computeMeasure(map.get("content"));
-			sb.append(renerateReport(map.get("url"),json)+"<br/>");
-			
+            sb.append(generateReport(surl,json)+"<br/>");
+
 		}
 		cc.pushDataComponentToOutput(OUTPUT_REPORT, sb.toString());
 	}
-	
-	private String renerateReport(String sURL, JSONObject json) {
+
+	private String generateReport(String sURL, JSONObject json) {
 		StringBuffer sbReport = new StringBuffer();
-		
+
 		sbReport.append("<table>");
-		
+
+//		sbReport.append("<tr><td colspan=\"2\">");
+//		sbReport.append("(<a href=\""+sURL+"\">"+sURL+"</a>)");
+//		sbReport.append("</td></tr>");
+
 		sbReport.append("<tr><td colspan=\"2\">");
-		sbReport.append("(<a href=\""+sURL+"\">"+sURL+"</a>)");
+		sbReport.append("<strong><a href='" + FLESCH_KINCAID_WIKIPEDIA_URL + "'>Flesch-Kincaid Readability Test</a></strong>");
 		sbReport.append("</td></tr>");
-		
-		sbReport.append("<tr><td colspan=\"2\">");
-		sbReport.append("<strong>Flesch Kincaid Readability Measure</strong>");
-		sbReport.append("</td></tr>");
-		
+
 		sbReport.append("<tr><td>");
 		sbReport.append(TOTAL_SYLLABLES);
 		sbReport.append("</td><td>");
@@ -112,7 +117,7 @@ implements ExecutableComponent {
 			sbReport.append("");
 		}
 		sbReport.append("</td><tr>");
-		
+
 		sbReport.append("<tr><td>");
 		sbReport.append(TOTAL_WORDS);
 		sbReport.append("</td><td>");
@@ -122,7 +127,7 @@ implements ExecutableComponent {
 			sbReport.append("");
 		}
 		sbReport.append("</td><tr>");
-		
+
 		sbReport.append("<tr><td>");
 		sbReport.append(TOTAL_SENTENCES);
 		sbReport.append("</td><td>");
@@ -132,27 +137,37 @@ implements ExecutableComponent {
 			sbReport.append("");
 		}
 		sbReport.append("</td><tr>");
-		
+
 		sbReport.append("<tr><td>");
-		sbReport.append(FLESCH_INDEX);
+		sbReport.append(FRES);
 		sbReport.append("</td><td>");
 		try {
-			sbReport.append(json.get(FLESCH_INDEX));
+		    sbReport.append(Math.round(json.getDouble(FRES)));
 		} catch (JSONException e) {
 			sbReport.append("");
 		}
 		sbReport.append("</td><tr>");
-		
+
+		sbReport.append("<tr><td>");
+        sbReport.append(FGL);
+        sbReport.append("</td><td>");
+        try {
+            sbReport.append(String.format("%.1f", json.getDouble(FGL)));
+        } catch (JSONException e) {
+            sbReport.append("");
+        }
+        sbReport.append("</td><tr>");
+
 		sbReport.append("</td></tr>");
-		
+
 		sbReport.append("</table>");
-		
+
 		return sbReport.toString();
 	}
 
 	private JSONObject computeMeasure (String content ) {
-    
-    
+
+
     int syllables = 0;
     int sentences = 0;
     int words     = 0;
@@ -170,26 +185,31 @@ implements ExecutableComponent {
     String sentenceDelim = ".:;?!";
     StringTokenizer sentenceTokenizer = new StringTokenizer(content,sentenceDelim);
     sentences = sentenceTokenizer.countTokens();
-    
-    //calculate flesch index
+
+    //calculate flesch reading ease score
     final float f1 = (float) 206.835;
     final float f2 = (float) 84.6;
     final float f3 = (float) 1.015;
     float r1 = (float) syllables / (float) words;
     float r2 = (float) words / (float) sentences;
-    float flesch = f1 - (f2*r1) - (f3*r2);
+    float fres = f1 - (f2*r1) - (f3*r2);
+
+    //calculate the flesch grade level
+    float fgl = 0.39f * ((float) words / (float)sentences) +
+                    11.8f * ((float)syllables / (float)words) - 15.59f;
 
     JSONObject json = new JSONObject();
-    
+
     try {
 		json.put(TOTAL_SYLLABLES,syllables);
 		json.put(TOTAL_WORDS,words);
 		json.put(TOTAL_SENTENCES,sentences);
-		json.put(FLESCH_INDEX,flesch);
+		json.put(FRES,fres);
+		json.put(FGL,fgl);
 	} catch (JSONException e) {
 		e.printStackTrace();
 	}
-   
+
     return json;
   }
 
