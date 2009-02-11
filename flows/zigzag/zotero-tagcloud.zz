@@ -1,0 +1,49 @@
+import <file:///Users/lauvil/org/meandre/components/rdf/zotero/URLsExtractor.rdf>
+import <file:///Users/lauvil/org/meandre/components/io/webservice/ServiceHeadPost.rdf>
+import <file:///Users/lauvil/org/meandre/components/io/webservice/ServiceTailString.rdf>
+import <file:///Users/lauvil/org/meandre/components/transform/List_to_Objects.rdf>
+import <file:///Users/lauvil/org/meandre/components/transform/MapObject_to_Key_Value.rdf>
+import <file:///Users/lauvil/org/meandre/components/io/url/URLFetcherAuthenticated.rdf>
+import <file:///Users/lauvil/org/meandre/components/text/wordcount/WordCounter.rdf>
+import <file:///Users/lauvil/org/meandre/components/viz/text/TagCloudImageMaker.rdf>
+import <file:///Users/lauvil/org/meandre/components/text/wordcount/WordCountFilterAdvanced.rdf>
+import <file:///Users/lauvil/org/meandre/components/viz/MIMEContentViz.rdf>
+import <file:///Users/lauvil/org/meandre/components/io/StreamContentReader.rdf>
+import <file:///Users/lauvil/org/meandre/components/text/transform/ToLowerCase.rdf>
+import <file:///Users/lauvil/org/meandre/components/text/transform/HTML2Text.rdf>
+#import <http://loretta-air.ncsa.uiuc.edu:1714/public/services/repository.ttl>
+
+alias <meandre://seasr.org/components/zotero/urls-extractor> as UE
+alias <meandre://seasr.org/components/zotero/service-head-post> as SHP
+alias <meandre://seasr.org/components/zotero/service-tail-text> as STS
+alias <meandre://seasr.org/components/list_to_objects> as LI
+alias <meandre://seasr.org/components/mapobject_to_key_value> as MKV
+alias <meandre://seasr.org/components/urlfetcherauthenticated> as URL
+alias <meandre://seasr.org/components/streamcontentreader> as DOC
+alias <meandre://seasr.org/components/html2text> as HTML2TEXT
+alias <meandre://seasr.org/components/tolowercase> as LOWERCASE
+alias <meandre://seasr.org/components/wordcounter> as COUNT
+alias <meandre://seasr.org/components/wordfilter> as FILTER
+alias <meandre://seasr.org/components/tag-cloud-image-maker> as TAGCLOUD
+alias <meandre://seasr.org/components/mimecontentviz> as VIZ
+
+ue,shp,sts,li,mkv,url,count = UE(),SHP(),STS(),LI(),MKV(),URL(),COUNT()
+filter,tagcloud,viz,doc,html2text,lowercase = FILTER(), TAGCLOUD(), VIZ(), DOC(),HTML2TEXT(), LOWERCASE()
+
+viz.MIME_type = "image"
+filter.is_Limited = "true"
+filter.upper_Limit = "100"
+
+@head = shp()
+@urls = ue(value_map:head.value_map)
+@objs = li(list_entries:urls.list_entries)
+@map = mkv(map_object:objs.object)
+@stream = url(URL:map.value)
+@document = doc(Stream:stream.Stream)
+@nothtml = html2text(Html:document.Object)
+@lowcase = lowercase(Text:nothtml.Text)
+@counts = count(Text:lowcase.Text)
+@filter_counts = filter(Map:counts.Map)
+@img = tagcloud(Map:filter_counts.Map)
+@vis = viz(Content:img.Object)
+sts(string:vis.HTML_Content;response:head.response;semaphore:head.semaphore)
