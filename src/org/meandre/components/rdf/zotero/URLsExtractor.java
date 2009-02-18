@@ -1,6 +1,8 @@
 package org.meandre.components.rdf.zotero;
 
 import java.io.ByteArrayInputStream;
+import java.io.InputStreamReader;
+import java.io.PrintStream;
 import java.util.Hashtable;
 import java.util.LinkedList;
 import java.util.List;
@@ -40,11 +42,9 @@ import com.hp.hpl.jena.rdf.model.ModelFactory;
 /**
 *  This class extracts the list of authors per entry from a Zotero RDF
 * 
-* @author Xavier LLor&agrave;
+* @author Xavier Llor&agrave;
 */
 public class URLsExtractor implements ExecutableComponent {
-
-
 
 	private static final String HTTP_WWW_GUTENBERG_ORG_FILES = "http://www.gutenberg.org/files/";
 
@@ -66,10 +66,13 @@ public class URLsExtractor implements ExecutableComponent {
 	public final static String OUTPUT_LIST_URLS = "list_entries";
 
 	// -------------------------------------------------------------------------
-
+	
+	private PrintStream console;
 
 	public void initialize(ComponentContextProperties ccp)
-	throws ComponentExecutionException, ComponentContextException {}
+	throws ComponentExecutionException, ComponentContextException {
+		console = ccp.getOutputConsole();
+	}
 	
 	public void dispose(ComponentContextProperties ccp)
 	throws ComponentExecutionException, ComponentContextException {}
@@ -83,39 +86,51 @@ public class URLsExtractor implements ExecutableComponent {
 		for ( String sKey:map.keySet() ) {
 			ByteArrayInputStream bais = new ByteArrayInputStream(map.get(sKey));
 			Model model = ModelFactory.createDefaultModel();
-			model.read(bais, null);
-			//model.write(System.out,"TTL",null);
+			model.read(bais, "meandre://specialUri");
 			list.addAll(pullURLs(model));
 		}
-		
+	
 		cc.pushDataComponentToOutput(OUTPUT_LIST_URLS, list);
 	}
 
 	private List<Map<String,String>> pullURLs(Model model) {
-		final String QUERY_AUTHORS =
-            "PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>\n"+
-            "PREFIX dc: <http://purl.org/dc/elements/1.1/>\n"+
-            "PREFIX foaf: <http://xmlns.com/foaf/0.1/>\n"+
-            "PREFIX bib: <http://purl.org/net/biblio#>\n"+
-            "SELECT DISTINCT ?uri ?title " +
-            "WHERE { " +
-            "      ?uri rdf:type bib:Document . " +
-            "      ?uri dc:title ?title ." +
-            "}";
-
-       // Query the basic properties
-       //QuerySolutionMap qsmBindings = new QuerySolutionMap();
-       //qsmBindings.add("component", res);
-
-       Query query = QueryFactory.create(QUERY_AUTHORS) ;
+		// Query to extract the item type, uri and title from the zotero rdf
+		final String QUERY_TYPE_URI_TITLE = "PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>\n"
+			+ "PREFIX dc: <http://purl.org/dc/elements/1.1/>\n"
+			+ "PREFIX foaf: <http://xmlns.com/foaf/0.1/>\n"
+			+ "PREFIX bib: <http://purl.org/net/biblio#>\n"
+			+ "PREFIX dcterms:  <http://purl.org/dc/terms/>\n"
+			+ "PREFIX z:       <http://www.zotero.org/namespaces/export#> \n"
+			+ "SELECT ?type ?uri ?title ?a ?n \n"
+			+ "WHERE { "
+			+ "      ?n rdf:value ?uri . "
+			+ "      ?n rdf:type dcterms:URI . "
+			+ "      ?a z:itemType ?type . "
+			+ "      ?a dc:title ?title . "
+			+ "      ?a dc:identifier ?n . "
+			+ "} order by ?type ?uri ?title ?a ?n ";
+      
+       Query query = QueryFactory.create(QUERY_TYPE_URI_TITLE) ;
        QueryExecution exec = QueryExecutionFactory.create(query, model, null);//qsmBindings);
        ResultSet results = exec.execSelect();
 
        List<Map<String,String>> lstRes = new LinkedList<Map<String,String>>();
        while ( results.hasNext() ) {
     	   QuerySolution resProps = results.nextSolution();
-    	   String sURI   = resProps.getResource("uri").toString();
-    	   String sTitle = resProps.getLiteral("title").getString();
+    	   String typeValue = resProps.getLiteral("type").toString();
+
+    	   if (typeValue.equalsIgnoreCase("attachment")){
+    		   System.out.println("skipping ... { type= attachment } { uri= " +
+    				   resProps.getLiteral("uri").toString() + " } { title= " +
+    				   resProps.getLiteral("title").toString() + " }"
+    		   );
+    		   continue;
+    	   }
+
+    	   String sURI = resProps.getLiteral("uri").toString();
+    	   String sTitle = resProps.getLiteral("title").toString();
+    	   console.println("{ type= " + typeValue + " }  { uri= "
+    			   + sURI + " } { title= " + sTitle + " }");
     	   String sContent = pullContent(sURI);
     	   Hashtable<String,String> ht = new Hashtable<String,String>();
     	   ht.put("url", sURI);
@@ -123,7 +138,6 @@ public class URLsExtractor implements ExecutableComponent {
     	   ht.put("content", sContent);
     	   lstRes.add(ht);   
        }
-       
        return lstRes;
 	}
 
@@ -137,13 +151,10 @@ public class URLsExtractor implements ExecutableComponent {
 
 	private String processURL(String sUrl) {
 		if ( sUrl.startsWith(HTTP_WWW_GUTENBERG_ORG_ETEXT) ) {
-			// Gutenberg book
+			// URL adjustment for Gutenberg items
 			String sTmp = sUrl.substring(HTTP_WWW_GUTENBERG_ORG_ETEXT.length());
 			sUrl = HTTP_WWW_GUTENBERG_ORG_FILES+sTmp+"/"+sTmp+".txt";
-		}
-		
+		}		
 		return sUrl;
 	}
-
-
 }
