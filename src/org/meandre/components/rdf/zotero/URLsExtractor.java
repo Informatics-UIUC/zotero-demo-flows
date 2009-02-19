@@ -23,12 +23,12 @@ import com.hp.hpl.jena.query.ResultSet;
 import com.hp.hpl.jena.rdf.model.Model;
 import com.hp.hpl.jena.rdf.model.ModelFactory;
 
-//------------------------------------------------------------------------- 
+//-------------------------------------------------------------------------
 @Component(
-		baseURL = "meandre://seasr.org/components/zotero/", 
-		creator = "Xavier Llor&agrave", 
-		description = "Extract the urls for each of the entry of a Zotero RDF", 
-		name = "URLs extractor", tags = "zotero, authors, information extraction", 
+		baseURL = "meandre://seasr.org/components/zotero/",
+		creator = "Xavier Llor&agrave",
+		description = "Extract the urls for each of the entry of a Zotero RDF",
+		name = "URLs extractor", tags = "zotero, authors, information extraction",
 		mode = Mode.compute, firingPolicy = Component.FiringPolicy.all
 )
 //-------------------------------------------------------------------------
@@ -37,7 +37,7 @@ import com.hp.hpl.jena.rdf.model.ModelFactory;
  * This class extracts the list of authors per entry from a Zotero RDF
  * For each zotero item, we have an output for the url, title, and a flag
  * indicating whether this is the last item or not.
- * 
+ *
  * @author Xavier Llor&agrave;
  * @author Loretta Auvil, modified
  */
@@ -50,13 +50,13 @@ public class URLsExtractor implements ExecutableComponent {
 	// -------------------------------------------------------------------------
 
 	@ComponentInput(
-			description = "A map object containing the key elements on the request and the assiciated values", 
+			description = "A map object containing the key elements on the request and the assiciated values",
 			name = "value_map"
 	)
 	public final static String INPUT_VALUEMAP = "value_map";
 
 	@ComponentOutput(
-			description = "A URL for the current item.", 
+			description = "A URL for the current item.",
 			name = "item_url"
 	)
 	public final static String OUTPUT_ITEM_URL = "item_url";
@@ -125,10 +125,10 @@ public class URLsExtractor implements ExecutableComponent {
 			String typeValue = resProps.getLiteral("type").toString();
 
 			if (typeValue.equalsIgnoreCase("attachment")){
-				System.out.println("skipping ... { type= attachment } { uri= " +
-						resProps.getLiteral("uri").toString() + " } { title= " +
-						resProps.getLiteral("title").toString() + " }"
-				);
+//				System.out.println("skipping ... { type= attachment } { uri= " +
+//						resProps.getLiteral("uri").toString() + " } { title= " +
+//						resProps.getLiteral("title").toString() + " }"
+//				);
 				continue;
 			}
 
@@ -148,7 +148,7 @@ public class URLsExtractor implements ExecutableComponent {
 			} catch (ComponentContextException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
-			}	   
+			}
 		}
 	}
 
@@ -157,7 +157,7 @@ public class URLsExtractor implements ExecutableComponent {
 			// URL adjustment for Gutenberg items
 			String sTmp = sUrl.substring(HTTP_WWW_GUTENBERG_ORG_ETEXT.length());
 			sUrl = HTTP_WWW_GUTENBERG_ORG_FILES+sTmp+"/"+sTmp+".txt";
-		}		
+		}
 		return sUrl;
 	}
 }
