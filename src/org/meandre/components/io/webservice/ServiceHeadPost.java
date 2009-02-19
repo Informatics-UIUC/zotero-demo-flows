@@ -21,19 +21,19 @@ import org.meandre.core.ExecutableComponent;
 import org.meandre.webui.WebUIException;
 import org.meandre.webui.WebUIFragmentCallback;
 
-// ------------------------------------------------------------------------- 
+// -------------------------------------------------------------------------
 @Component(
-		baseURL = "meandre://seasr.org/components/zotero/", 
-		creator = "Xavier Llor&agrave", 
-		description = "Service head for a service that gets data via posts", 
-		name = "Service head post", tags = "WebUI, post, process request", 
+		baseURL = "meandre://seasr.org/components/zotero/",
+		creator = "Xavier Llor&agrave",
+		description = "Service head for a service that gets data via posts",
+		name = "Service head post", tags = "WebUI, post, process request",
 		mode = Mode.webui, firingPolicy = Component.FiringPolicy.all
 )
 // -------------------------------------------------------------------------
 
 /**
  *  This class implements a component that using the WebUI accepts post requests
- * 
+ *
  * @author Xavier Lor&agrave;
  */
 public class ServiceHeadPost implements ExecutableComponent,
@@ -43,19 +43,19 @@ public class ServiceHeadPost implements ExecutableComponent,
 
 	public final static String OUTPUT_VALUEMAP = "value_map";
 	@ComponentOutput(
-			description = "A map object containing the key elements on the request and the assiciated values", 
+			description = "A map object containing the key elements on the request and the assiciated values",
 			name = OUTPUT_VALUEMAP
 	)
-	
+
 	public final static String OUTPUT_RESPONSE = "response";
 	@ComponentOutput(
-			description = "The response to be sent to the Service Tail Post.", 
+			description = "The response to be sent to the Service Tail Post.",
 			name = OUTPUT_RESPONSE
 	)
-	
+
 	public final static String OUTPUT_SEMAPHORE = "semaphore";
 	@ComponentOutput(
-			description = "The semaphore to signal the response was sent.", 
+			description = "The semaphore to signal the response was sent.",
 			name = OUTPUT_SEMAPHORE
 	)
 
@@ -99,7 +99,7 @@ public class ServiceHeadPost implements ExecutableComponent,
 	public void emptyRequest(HttpServletResponse response)
 			throws WebUIException {
 		try {
-			console.println("[WARNING] Empty request recieved");
+			console.println("[WARNING] Empty request received");
 			response.sendError(HttpServletResponse.SC_EXPECTATION_FAILED);
 		} catch (IOException e) {
 			throw new WebUIException(e);
@@ -109,10 +109,10 @@ public class ServiceHeadPost implements ExecutableComponent,
 	@SuppressWarnings("unchecked")
 	public void handle(HttpServletRequest request, HttpServletResponse response)
 	throws WebUIException {
-		console.println("[INFO] Request recieved from " + request.getRemoteHost()
+		console.println("[INFO] Request received from " + request.getRemoteHost()
 				+ "/" + request.getRemoteAddr() + ":" + request.getRemotePort()
 				+ "[" + request.getRemoteUser() + "]");
-		
+
 		Map<String,byte[]> map = new Hashtable<String,byte[]>();
 		Enumeration mapRequest = request.getParameterNames();
 		while ( mapRequest.hasMoreElements() ) {
@@ -122,7 +122,7 @@ public class ServiceHeadPost implements ExecutableComponent,
 			for ( String s:sa ) sAcc+=s;
 			map.put(sName, sAcc.getBytes());
 		}
-		
+
 		try {
 			Semaphore sem = new Semaphore(1, true);
 			sem.acquire();
@@ -135,6 +135,6 @@ public class ServiceHeadPost implements ExecutableComponent,
 			throw new WebUIException(e);
 		} catch (ComponentContextException e) {
 			throw new WebUIException(e);
-		}		
+		}
 	}
 }
