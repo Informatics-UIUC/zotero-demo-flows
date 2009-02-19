@@ -1,18 +1,27 @@
-#import <file:///tmp/org/meandre/components/readability/measures/FleschKincaidReadabilityMeasure.rdf>
-#import <file:///tmp/org/meandre/components/rdf/zotero/URLsExtractor.rdf>
-#import <file:///tmp/org/meandre/components/io/webservice/ServiceHeadPost.rdf>
-#import <file:///tmp/org/meandre/components/io/webservice/ServiceTailString.rdf>
-import <http://edward4.ncsa.uiuc.edu:1714/public/services/repository.ttl>
+import <file:///tmp/org/meandre/components/readability/measures/FleschKincaidReadabilityMeasure.rdf>
+import <file:///tmp/org/meandre/components/rdf/zotero/URLsExtractor.rdf>
+import <file:///tmp/org/meandre/components/io/webservice/ServiceHeadPost.rdf>
+import <file:///tmp/org/meandre/components/io/webservice/ServiceTailString.rdf>
+import <file:///tmp/org/meandre/components/io/url/URLFetcherAuthenticated.rdf>
+import <file:///tmp/org/meandre/components/io/StreamContentReader.rdf>
+import <file:///tmp/org/meandre/components/control/ForkX2.rdf>
 
+#import <http://edward4.ncsa.uiuc.edu:1714/public/services/repository.ttl>
 
 alias <meandre://seasr.org/components/zotero/urls-extractor> as UE
 alias <meandre://seasr.org/components/zotero/service-head-post> as SHP
 alias <meandre://seasr.org/components/zotero/service-tail-text> as STS
 alias <meandre://seasr.org/components/zotero/flesch-kincaid-readability-measure> as FKRM
+alias <meandre://seasr.org/components/urlfetcherauthenticated> as URL
+alias <meandre://seasr.org/components/streamcontentreader> as DOC
+alias <meandre://seasr.org/components/fork-x2> as FORK
 
 
-ue,shp,sts,fkrm = UE(),SHP(),STS(),FKRM()
+ue,shp,sts,fkrm,url,doc,fork = UE(),SHP(),STS(),FKRM(),URL(),DOC(),FORK()
 @head = shp()
 @urls = ue(value_map:head.value_map)
-@report = fkrm(list_entries:urls.list_entries)
+@fork2 = fork(object:urls.item_url)
+@stream = url(URL:fork2.object_1)
+@document = doc(Stream:stream.Stream)
+@report = fkrm(Text:document.Object;last_item:urls.last_item;item_title:urls.item_title;item_url:fork2.object_2)
 sts(string:report.report;response:head.response;semaphore:head.semaphore)
