@@ -23,7 +23,7 @@ import org.meandre.core.ExecutableComponent;
  * http://www.shiffman.net/teaching/a2z/week1/
  *
  * @author Xavier Llor&agrave;
- *
+ * @author Loretta Auvil - updated
  */
 //-------------------------------------------------------------------------
 @Component(
@@ -52,20 +52,38 @@ implements ExecutableComponent {
 	// -------------------------------------------------------------------------
 
 	@ComponentInput(
-			description = "The list of the entries to process",
-			name = "list_entries"
+			description = "Text content of the url page.", 
+			name = "Text"
 	)
-	public final static String INPUT_ENTRIES = "list_entries";
+	public final static String INPUT_CONTENT = "Text";
+
+	@ComponentInput(
+			description = "Boolean value for whether the current item passed is the last item.",
+			name = "last_item"
+	)
+	public final static String INPUT_LAST_ITEM = "last_item";
+
+	@ComponentInput(
+			description = "Title for the current item.",
+			name = "item_title"
+	)
+	public final static String INPUT_ITEM_TITLE = "item_title";
+
+	@ComponentInput(
+			description = "URL for the current item.",
+			name = "item_url"
+	)
+	public final static String INPUT_ITEM_URL = "item_url";
 
 	@ComponentOutput(
-			description = "A report of the social network analysis.",
+			description = "A report of the Flesch Kincaid readability measures.", 
 			name = "report"
 	)
 	public final static String OUTPUT_REPORT = "report";
 
 	// -------------------------------------------------------------------------
 
-
+	private StringBuffer sb;
 
 	public void initialize(ComponentContextProperties ccp)
 	throws ComponentExecutionException, ComponentContextException {
@@ -75,24 +93,29 @@ implements ExecutableComponent {
 	throws ComponentExecutionException, ComponentContextException {
 	}
 
-
 	@SuppressWarnings("unchecked")
 	public void execute(ComponentContext cc)
 	throws ComponentExecutionException, ComponentContextException {
-		List<Map<String,String>> lst = (List<Map<String,String>>)cc.getDataComponentFromInput(INPUT_ENTRIES);
-
-		StringBuffer sb = new StringBuffer();
-		sb.append("<h1>Readability analysis</h1>");
-		Iterator<Map<String, String>> iter = lst.iterator();
-		while ( iter.hasNext() ) {
-			Map<String, String> map = iter.next();
-			String surl = map.get("url");
-			sb.append("<h2><a href='" + surl + "'>" + map.get("title") + "</a></h2>");
-			JSONObject json = computeMeasure(map.get("content"));
-            sb.append(generateReport(surl,json)+"<br/>");
-
+		// check to see if sb is null and create; otherwise it will be appended while
+		// gathering data for all the submitted urls
+		if (sb == null) {
+			sb = new StringBuffer();
+			sb.append("<h1>Readability Analysis</h1>");
 		}
-		cc.pushDataComponentToOutput(OUTPUT_REPORT, sb.toString());
+
+		String title = (String)cc.getDataComponentFromInput(INPUT_ITEM_TITLE);
+		String url = (String)cc.getDataComponentFromInput(INPUT_ITEM_URL);
+		String content = (String)cc.getDataComponentFromInput(INPUT_CONTENT);
+
+		sb.append("<h2>"+title+"</h2>");
+		JSONObject json = computeMeasure(content);
+		sb.append(generateReport(url,json)+"<br/>");
+
+		// null sb so that it is ready to execute the again for another run
+		if ((String)cc.getDataComponentFromInput(INPUT_LAST_ITEM)=="true") {
+			cc.pushDataComponentToOutput(OUTPUT_REPORT, sb.toString());
+			sb = null;
+		}
 	}
 
 	private String generateReport(String sURL, JSONObject json) {
@@ -100,9 +123,9 @@ implements ExecutableComponent {
 
 		sbReport.append("<table>");
 
-//		sbReport.append("<tr><td colspan=\"2\">");
-//		sbReport.append("(<a href=\""+sURL+"\">"+sURL+"</a>)");
-//		sbReport.append("</td></tr>");
+		sbReport.append("<tr><td colspan=\"2\">");
+		sbReport.append("(<a href=\""+sURL+"\">"+sURL+"</a>)");
+		sbReport.append("</td></tr>");
 
 		sbReport.append("<tr><td colspan=\"2\">");
 		sbReport.append("<strong><a href='" + FLESCH_KINCAID_WIKIPEDIA_URL + "'>Flesch-Kincaid Readability Test</a></strong>");
@@ -142,21 +165,21 @@ implements ExecutableComponent {
 		sbReport.append(FRES);
 		sbReport.append("</td><td>");
 		try {
-		    sbReport.append(Math.round(json.getDouble(FRES)));
+			sbReport.append(Math.round(json.getDouble(FRES)));
 		} catch (JSONException e) {
 			sbReport.append("");
 		}
 		sbReport.append("</td><tr>");
 
 		sbReport.append("<tr><td>");
-        sbReport.append(FGL);
-        sbReport.append("</td><td>");
-        try {
-            sbReport.append(String.format("%.1f", json.getDouble(FGL)));
-        } catch (JSONException e) {
-            sbReport.append("");
-        }
-        sbReport.append("</td><tr>");
+		sbReport.append(FGL);
+		sbReport.append("</td><td>");
+		try {
+			sbReport.append(String.format("%.1f", json.getDouble(FGL)));
+		} catch (JSONException e) {
+			sbReport.append("");
+		}
+		sbReport.append("</td><tr>");
 
 		sbReport.append("</td></tr>");
 
@@ -167,91 +190,87 @@ implements ExecutableComponent {
 
 	private JSONObject computeMeasure (String content ) {
 
+		int syllables = 0;
+		int sentences = 0;
+		int words     = 0;
 
-    int syllables = 0;
-    int sentences = 0;
-    int words     = 0;
+		String delimiters = ".,':;?{}[]=-+_!@#$%^&*() ";
+		StringTokenizer tokenizer = new StringTokenizer(content,delimiters);
+		//go through all words
+		while (tokenizer.hasMoreTokens())
+		{
+			String word = tokenizer.nextToken();
+			syllables += countSyllables(word);
+			words++;
+		}
+		//look for sentence delimiters
+		String sentenceDelim = ".:;?!";
+		StringTokenizer sentenceTokenizer = new StringTokenizer(content,sentenceDelim);
+		sentences = sentenceTokenizer.countTokens();
 
-    String delimiters = ".,':;?{}[]=-+_!@#$%^&*() ";
-    StringTokenizer tokenizer = new StringTokenizer(content,delimiters);
-    //go through all words
-    while (tokenizer.hasMoreTokens())
-    {
-      String word = tokenizer.nextToken();
-      syllables += countSyllables(word);
-      words++;
-    }
-    //look for sentence delimiters
-    String sentenceDelim = ".:;?!";
-    StringTokenizer sentenceTokenizer = new StringTokenizer(content,sentenceDelim);
-    sentences = sentenceTokenizer.countTokens();
+		//calculate flesch reading ease score
+		final float f1 = (float) 206.835;
+		final float f2 = (float) 84.6;
+		final float f3 = (float) 1.015;
+		float r1 = (float) syllables / (float) words;
+		float r2 = (float) words / (float) sentences;
+		float fres = f1 - (f2*r1) - (f3*r2);
 
-    //calculate flesch reading ease score
-    final float f1 = (float) 206.835;
-    final float f2 = (float) 84.6;
-    final float f3 = (float) 1.015;
-    float r1 = (float) syllables / (float) words;
-    float r2 = (float) words / (float) sentences;
-    float fres = f1 - (f2*r1) - (f3*r2);
+		//calculate the flesch grade level
+		float fgl = 0.39f * ((float) words / (float)sentences) +
+		11.8f * ((float)syllables / (float)words) - 15.59f;
 
-    //calculate the flesch grade level
-    float fgl = 0.39f * ((float) words / (float)sentences) +
-                    11.8f * ((float)syllables / (float)words) - 15.59f;
+		JSONObject json = new JSONObject();
 
-    JSONObject json = new JSONObject();
+		try {
+			json.put(TOTAL_SYLLABLES,syllables);
+			json.put(TOTAL_WORDS,words);
+			json.put(TOTAL_SENTENCES,sentences);
+			json.put(FRES,fres);
+			json.put(FGL,fgl);
+		} catch (JSONException e) {
+			e.printStackTrace();
+		}
 
-    try {
-		json.put(TOTAL_SYLLABLES,syllables);
-		json.put(TOTAL_WORDS,words);
-		json.put(TOTAL_SENTENCES,sentences);
-		json.put(FRES,fres);
-		json.put(FGL,fgl);
-	} catch (JSONException e) {
-		e.printStackTrace();
+		return json;
 	}
 
-    return json;
-  }
+	// A method to count the number of syllables in a word
+	// Pretty basic, just based off of the number of vowels
+	// This could be improved
+	private static int countSyllables(String word) {
+		int      syl    = 0;
+		boolean  vowel  = false;
+		int      length = word.length();
 
+		//check each word for vowels (don't count more than one vowel in a row)
+		for(int i=0; i<length; i++) {
+			if        (isVowel(word.charAt(i)) && (vowel==false)) {
+				vowel = true;
+				syl++;
+			} else if (isVowel(word.charAt(i)) && (vowel==true)) {
+				vowel = true;
+			} else {
+				vowel = false;
+			}
+		}
 
-// A method to count the number of syllables in a word
-// Pretty basic, just based off of the number of vowels
-// This could be improved
-private static int countSyllables(String word) {
-    int      syl    = 0;
-    boolean  vowel  = false;
-    int      length = word.length();
+		char tempChar = word.charAt(word.length()-1);
+		//check for 'e' at the end, as long as not a word w/ one syllable
+		if (((tempChar == 'e') || (tempChar == 'E')) && (syl != 1)) {
+			syl--;
+		}
+		return syl;
+	}
 
-    //check each word for vowels (don't count more than one vowel in a row)
-    for(int i=0; i<length; i++) {
-      if        (isVowel(word.charAt(i)) && (vowel==false)) {
-        vowel = true;
-        syl++;
-      } else if (isVowel(word.charAt(i)) && (vowel==true)) {
-        vowel = true;
-      } else {
-        vowel = false;
-      }
-    }
-
-    char tempChar = word.charAt(word.length()-1);
-    //check for 'e' at the end, as long as not a word w/ one syllable
-    if (((tempChar == 'e') || (tempChar == 'E')) && (syl != 1)) {
-      syl--;
-    }
-    return syl;
-}
-
-//check if a char is a vowel (count y)
-private static boolean isVowel(char c) {
-    if      ((c == 'a') || (c == 'A')) { return true;  }
-    else if ((c == 'e') || (c == 'E')) { return true;  }
-    else if ((c == 'i') || (c == 'I')) { return true;  }
-    else if ((c == 'o') || (c == 'O')) { return true;  }
-    else if ((c == 'u') || (c == 'U')) { return true;  }
-    else if ((c == 'y') || (c == 'Y')) { return true;  }
-    else                               { return false; }
-  }
-
-
+	//check if a char is a vowel (count y)
+	private static boolean isVowel(char c) {
+		if      ((c == 'a') || (c == 'A')) { return true;  }
+		else if ((c == 'e') || (c == 'E')) { return true;  }
+		else if ((c == 'i') || (c == 'I')) { return true;  }
+		else if ((c == 'o') || (c == 'O')) { return true;  }
+		else if ((c == 'u') || (c == 'U')) { return true;  }
+		else if ((c == 'y') || (c == 'Y')) { return true;  }
+		else                               { return false; }
+	}
 }

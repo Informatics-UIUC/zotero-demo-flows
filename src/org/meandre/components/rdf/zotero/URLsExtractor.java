@@ -1,14 +1,9 @@
 package org.meandre.components.rdf.zotero;
 
 import java.io.ByteArrayInputStream;
-import java.io.InputStreamReader;
 import java.io.PrintStream;
-import java.util.Hashtable;
-import java.util.LinkedList;
-import java.util.List;
 import java.util.Map;
 
-import org.htmlparser.beans.StringBean;
 import org.meandre.annotations.Component;
 import org.meandre.annotations.ComponentInput;
 import org.meandre.annotations.ComponentOutput;
@@ -28,7 +23,6 @@ import com.hp.hpl.jena.query.ResultSet;
 import com.hp.hpl.jena.rdf.model.Model;
 import com.hp.hpl.jena.rdf.model.ModelFactory;
 
-
 //------------------------------------------------------------------------- 
 @Component(
 		baseURL = "meandre://seasr.org/components/zotero/", 
@@ -40,10 +34,13 @@ import com.hp.hpl.jena.rdf.model.ModelFactory;
 //-------------------------------------------------------------------------
 
 /**
-*  This class extracts the list of authors per entry from a Zotero RDF
-* 
-* @author Xavier Llor&agrave;
-*/
+ * This class extracts the list of authors per entry from a Zotero RDF
+ * For each zotero item, we have an output for the url, title, and a flag
+ * indicating whether this is the last item or not.
+ * 
+ * @author Xavier Llor&agrave;
+ * @author Loretta Auvil, modified
+ */
 public class URLsExtractor implements ExecutableComponent {
 
 	private static final String HTTP_WWW_GUTENBERG_ORG_FILES = "http://www.gutenberg.org/files/";
@@ -57,43 +54,52 @@ public class URLsExtractor implements ExecutableComponent {
 			name = "value_map"
 	)
 	public final static String INPUT_VALUEMAP = "value_map";
-	
-	@ComponentOutput(
-			description = "A list of hashtable containing title, and url for each entry. There is one vector for" +
-					      "Zotero entry", 
-			name = "list_entries"
-	)
-	public final static String OUTPUT_LIST_URLS = "list_entries";
 
+	@ComponentOutput(
+			description = "A URL for the current item.", 
+			name = "item_url"
+	)
+	public final static String OUTPUT_ITEM_URL = "item_url";
+
+	@ComponentOutput(
+			description = "Boolean value for whether the current item passed is the last item.",
+			name = "last_item"
+	)
+	public final static String OUTPUT_LAST_ITEM = "last_item";
+
+	@ComponentOutput(
+			description = "Title for the current item.",
+			name = "item_title"
+	)
+	public final static String OUTPUT_ITEM_TITLE = "item_title";
 	// -------------------------------------------------------------------------
-	
+
 	private PrintStream console;
+	private ComponentContext ccHandle;
 
 	public void initialize(ComponentContextProperties ccp)
 	throws ComponentExecutionException, ComponentContextException {
 		console = ccp.getOutputConsole();
 	}
-	
+
 	public void dispose(ComponentContextProperties ccp)
 	throws ComponentExecutionException, ComponentContextException {}
 
 	@SuppressWarnings("unchecked")
 	public void execute(ComponentContext cc)
 	throws ComponentExecutionException, ComponentContextException {
-		
+
+		ccHandle = cc;
 		Map<String,byte[]> map = (Map<String, byte[]>) cc.getDataComponentFromInput(INPUT_VALUEMAP);
-		List<Map<String,String>> list = new LinkedList<Map<String,String>>();
 		for ( String sKey:map.keySet() ) {
 			ByteArrayInputStream bais = new ByteArrayInputStream(map.get(sKey));
 			Model model = ModelFactory.createDefaultModel();
 			model.read(bais, "meandre://specialUri");
-			list.addAll(pullURLs(model));
+			pullURLs(model);
 		}
-	
-		cc.pushDataComponentToOutput(OUTPUT_LIST_URLS, list);
 	}
 
-	private List<Map<String,String>> pullURLs(Model model) {
+	private void pullURLs(Model model) {
 		// Query to extract the item type, uri and title from the zotero rdf
 		final String QUERY_TYPE_URI_TITLE = "PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>\n"
 			+ "PREFIX dc: <http://purl.org/dc/elements/1.1/>\n"
@@ -109,44 +115,41 @@ public class URLsExtractor implements ExecutableComponent {
 			+ "      ?a dc:title ?title . "
 			+ "      ?a dc:identifier ?n . "
 			+ "} order by ?type ?uri ?title ?a ?n ";
-      
-       Query query = QueryFactory.create(QUERY_TYPE_URI_TITLE) ;
-       QueryExecution exec = QueryExecutionFactory.create(query, model, null);//qsmBindings);
-       ResultSet results = exec.execSelect();
 
-       List<Map<String,String>> lstRes = new LinkedList<Map<String,String>>();
-       while ( results.hasNext() ) {
-    	   QuerySolution resProps = results.nextSolution();
-    	   String typeValue = resProps.getLiteral("type").toString();
+		Query query = QueryFactory.create(QUERY_TYPE_URI_TITLE) ;
+		QueryExecution exec = QueryExecutionFactory.create(query, model, null);//qsmBindings);
+		ResultSet results = exec.execSelect();
 
-    	   if (typeValue.equalsIgnoreCase("attachment")){
-    		   System.out.println("skipping ... { type= attachment } { uri= " +
-    				   resProps.getLiteral("uri").toString() + " } { title= " +
-    				   resProps.getLiteral("title").toString() + " }"
-    		   );
-    		   continue;
-    	   }
+		while ( results.hasNext() ) {
+			QuerySolution resProps = results.nextSolution();
+			String typeValue = resProps.getLiteral("type").toString();
 
-    	   String sURI = resProps.getLiteral("uri").toString();
-    	   String sTitle = resProps.getLiteral("title").toString();
-    	   console.println("{ type= " + typeValue + " }  { uri= "
-    			   + sURI + " } { title= " + sTitle + " }");
-    	   String sContent = pullContent(sURI);
-    	   Hashtable<String,String> ht = new Hashtable<String,String>();
-    	   ht.put("url", sURI);
-    	   ht.put("title", sTitle);
-    	   ht.put("content", sContent);
-    	   lstRes.add(ht);   
-       }
-       return lstRes;
-	}
+			if (typeValue.equalsIgnoreCase("attachment")){
+				System.out.println("skipping ... { type= attachment } { uri= " +
+						resProps.getLiteral("uri").toString() + " } { title= " +
+						resProps.getLiteral("title").toString() + " }"
+				);
+				continue;
+			}
 
-	private String pullContent(String sURL) {
-		sURL = processURL(sURL);
-		StringBean sb = new StringBean ();
-	    sb.setURL (sURL);
-	    String sRes = sb.getStrings();
-		return (sRes==null)?"":sRes;
+			String sURI = resProps.getLiteral("uri").toString();
+			String sTitle = resProps.getLiteral("title").toString();
+			sURI = processURL(sURI);
+			console.println("{ type= " + typeValue + " }  { uri= "
+					+ sURI + " } { title= " + sTitle + " }");
+			try {
+				ccHandle.pushDataComponentToOutput(OUTPUT_ITEM_URL, sURI);
+				ccHandle.pushDataComponentToOutput(OUTPUT_ITEM_TITLE, sTitle);
+
+				if (results.hasNext())
+					ccHandle.pushDataComponentToOutput(OUTPUT_LAST_ITEM, "false");
+				else
+					ccHandle.pushDataComponentToOutput(OUTPUT_LAST_ITEM, "true");
+			} catch (ComponentContextException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}	   
+		}
 	}
 
 	private String processURL(String sUrl) {
