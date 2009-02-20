@@ -2,8 +2,13 @@ package org.meandre.components.rdf.zotero;
 
 import java.io.ByteArrayInputStream;
 import java.io.PrintStream;
+import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
+import java.util.Vector;
+import java.util.Map.Entry;
 
+import org.apache.commons.collections.KeyValue;
 import org.meandre.annotations.Component;
 import org.meandre.annotations.ComponentInput;
 import org.meandre.annotations.ComponentOutput;
@@ -90,16 +95,37 @@ public class URLsExtractor implements ExecutableComponent {
 	throws ComponentExecutionException, ComponentContextException {
 
 		ccHandle = cc;
+
 		Map<String,byte[]> map = (Map<String, byte[]>) cc.getDataComponentFromInput(INPUT_VALUEMAP);
 		for ( String sKey:map.keySet() ) {
 			ByteArrayInputStream bais = new ByteArrayInputStream(map.get(sKey));
 			Model model = ModelFactory.createDefaultModel();
 			model.read(bais, "meandre://specialUri");
-			pullURLs(model);
+			Map<String, String> mapURLs = pullURLs(model);
+			int itemCount = mapURLs.size();
+
+			for (Entry<String, String> item : mapURLs.entrySet()) {
+			    String sURI = item.getKey();
+			    String sTitle = item.getValue();
+			    console.println("{ uri= " + sURI + " } { title= " + sTitle + " }");
+
+	            try {
+	                ccHandle.pushDataComponentToOutput(OUTPUT_ITEM_URL, sURI);
+	                ccHandle.pushDataComponentToOutput(OUTPUT_ITEM_TITLE, sTitle);
+
+	                if (--itemCount > 0)
+	                    ccHandle.pushDataComponentToOutput(OUTPUT_LAST_ITEM, "false");
+	                else
+	                    ccHandle.pushDataComponentToOutput(OUTPUT_LAST_ITEM, "true");
+	            } catch (ComponentContextException e) {
+	                // TODO Auto-generated catch block
+	                e.printStackTrace();
+	            }
+			}
 		}
 	}
 
-	private void pullURLs(Model model) {
+	private Map<String, String> pullURLs(Model model) {
 		// Query to extract the item type, uri and title from the zotero rdf
 		final String QUERY_TYPE_URI_TITLE = "PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>\n"
 			+ "PREFIX dc: <http://purl.org/dc/elements/1.1/>\n"
@@ -120,6 +146,8 @@ public class URLsExtractor implements ExecutableComponent {
 		QueryExecution exec = QueryExecutionFactory.create(query, model, null);//qsmBindings);
 		ResultSet results = exec.execSelect();
 
+		Map<String, String> mapURLs = new HashMap<String, String>();
+
 		while ( results.hasNext() ) {
 			QuerySolution resProps = results.nextSolution();
 			String typeValue = resProps.getLiteral("type").toString();
@@ -135,21 +163,10 @@ public class URLsExtractor implements ExecutableComponent {
 			String sURI = resProps.getLiteral("uri").toString();
 			String sTitle = resProps.getLiteral("title").toString();
 			sURI = processURL(sURI);
-			console.println("{ type= " + typeValue + " }  { uri= "
-					+ sURI + " } { title= " + sTitle + " }");
-			try {
-				ccHandle.pushDataComponentToOutput(OUTPUT_ITEM_URL, sURI);
-				ccHandle.pushDataComponentToOutput(OUTPUT_ITEM_TITLE, sTitle);
-
-				if (results.hasNext())
-					ccHandle.pushDataComponentToOutput(OUTPUT_LAST_ITEM, "false");
-				else
-					ccHandle.pushDataComponentToOutput(OUTPUT_LAST_ITEM, "true");
-			} catch (ComponentContextException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
+			mapURLs.put(sURI, sTitle);
 		}
+
+		return mapURLs;
 	}
 
 	private String processURL(String sUrl) {
