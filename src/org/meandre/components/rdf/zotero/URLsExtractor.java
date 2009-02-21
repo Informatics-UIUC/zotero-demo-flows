@@ -77,6 +77,12 @@ public class URLsExtractor implements ExecutableComponent {
 			name = "item_title"
 	)
 	public final static String OUTPUT_ITEM_TITLE = "item_title";
+	
+	@ComponentOutput(
+			description = "No data to dipslay.",
+			name = "no_data"
+	)
+	public final static String OUTPUT_NO_DATA = "no_data";
 	// -------------------------------------------------------------------------
 
 	private PrintStream console;
@@ -98,12 +104,25 @@ public class URLsExtractor implements ExecutableComponent {
 
 		Map<String,byte[]> map = (Map<String, byte[]>) cc.getDataComponentFromInput(INPUT_VALUEMAP);
 		for ( String sKey:map.keySet() ) {
-			ByteArrayInputStream bais = new ByteArrayInputStream(map.get(sKey));
-			Model model = ModelFactory.createDefaultModel();
-			model.read(bais, "meandre://specialUri");
-			Map<String, String> mapURLs = pullURLs(model);
-			int itemCount = mapURLs.size();
+			Map<String, String> mapURLs = null;
+			int itemCount = 0;
+			try {
+				ByteArrayInputStream bais = new ByteArrayInputStream(map.get(sKey));
+				Model model = ModelFactory.createDefaultModel();
+				model.read(bais, "meandre://specialUri");
+				mapURLs = pullURLs(model);
+				itemCount = mapURLs.size();
+			} catch (Exception e1) {
+				// TODO Auto-generated catch block
+				e1.printStackTrace();
+				ccHandle.pushDataComponentToOutput(OUTPUT_NO_DATA, "Error in data format. "+e1.getMessage());
+				return;
+			}
 
+			if (itemCount == 0){
+				ccHandle.pushDataComponentToOutput(OUTPUT_NO_DATA, "Your items contained no url information. Check to see that the URL element has a valid url.");
+				return;
+			}
 			for (Entry<String, String> item : mapURLs.entrySet()) {
 			    String sURI = item.getKey();
 			    String sTitle = item.getValue();
@@ -113,7 +132,7 @@ public class URLsExtractor implements ExecutableComponent {
 	                ccHandle.pushDataComponentToOutput(OUTPUT_ITEM_URL, sURI);
 	                ccHandle.pushDataComponentToOutput(OUTPUT_ITEM_TITLE, sTitle);
 
-	                if (--itemCount > 0)
+	                if (itemCount-- > 1)
 	                    ccHandle.pushDataComponentToOutput(OUTPUT_LAST_ITEM, "false");
 	                else
 	                    ccHandle.pushDataComponentToOutput(OUTPUT_LAST_ITEM, "true");
