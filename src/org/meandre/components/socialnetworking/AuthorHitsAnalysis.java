@@ -45,7 +45,7 @@ import edu.uci.ics.jung.utils.UserData;
 */
 public class AuthorHitsAnalysis implements ExecutableComponent {
 
-	private static final String AUTHOR = "Author";
+	public static final String AUTHOR = "Author";
 
 	// -------------------------------------------------------------------------
 
@@ -54,12 +54,19 @@ public class AuthorHitsAnalysis implements ExecutableComponent {
 			name = "list_authors"
 	)
 	public final static String INPUT_LISTAUTHORS = "list_authors";
-	
+
 	@ComponentOutput(
 			description = "A report of the social network analysis.", 
 			name = "report"
 	)
 	public final static String OUTPUT_REPORT = "report";
+	
+
+	@ComponentOutput(
+			description = "The graph generated.", 
+			name = "graph"
+	)
+	public final static String OUTPUT_GRAPH = "graph";
 
 	// -------------------------------------------------------------------------
 
@@ -80,6 +87,7 @@ public class AuthorHitsAnalysis implements ExecutableComponent {
 		AbstractRanker rank = computeRank(g);
 		generateReport(sbReport,rank);
 		
+		cc.pushDataComponentToOutput(OUTPUT_GRAPH, g);
 		cc.pushDataComponentToOutput(OUTPUT_REPORT, sbReport.toString());
 	}
 

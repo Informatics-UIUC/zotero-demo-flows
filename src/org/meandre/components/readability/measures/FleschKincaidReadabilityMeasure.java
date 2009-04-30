@@ -1,8 +1,5 @@
 package org.meandre.components.readability.measures;
 
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
 import java.util.StringTokenizer;
 
 import org.json.JSONException;
@@ -93,7 +90,6 @@ implements ExecutableComponent {
 	throws ComponentExecutionException, ComponentContextException {
 	}
 
-	@SuppressWarnings("unchecked")
 	public void execute(ComponentContext cc)
 	throws ComponentExecutionException, ComponentContextException {
 		// check to see if sb is null and create; otherwise it will be appended while

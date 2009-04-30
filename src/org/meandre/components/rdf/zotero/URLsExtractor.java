@@ -3,12 +3,9 @@ package org.meandre.components.rdf.zotero;
 import java.io.ByteArrayInputStream;
 import java.io.PrintStream;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
-import java.util.Vector;
 import java.util.Map.Entry;
 
-import org.apache.commons.collections.KeyValue;
 import org.meandre.annotations.Component;
 import org.meandre.annotations.ComponentInput;
 import org.meandre.annotations.ComponentOutput;

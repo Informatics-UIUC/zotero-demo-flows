@@ -44,7 +44,7 @@ import edu.uci.ics.jung.utils.UserData;
 */
 public class AuthorDegreeDistributionAnalysis implements ExecutableComponent {
 
-	private static final String AUTHOR = "Author";
+	public static final String AUTHOR = "Author";
 
 	// -------------------------------------------------------------------------
 
@@ -60,6 +60,12 @@ public class AuthorDegreeDistributionAnalysis implements ExecutableComponent {
 	)
 	public final static String OUTPUT_REPORT = "report";
 
+	@ComponentOutput(
+			description = "The graph generated.", 
+			name = "graph"
+	)
+	public final static String OUTPUT_GRAPH = "graph";
+	
 	// -------------------------------------------------------------------------
 
 
@@ -79,6 +85,7 @@ public class AuthorDegreeDistributionAnalysis implements ExecutableComponent {
 		AbstractRanker rank = computeRank(g);
 		generateReport(sbReport,rank);
 		
+		cc.pushDataComponentToOutput(OUTPUT_GRAPH, g);
 		cc.pushDataComponentToOutput(OUTPUT_REPORT, sbReport.toString());
 	}
 

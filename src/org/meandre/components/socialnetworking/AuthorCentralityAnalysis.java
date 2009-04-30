@@ -47,7 +47,7 @@ public class AuthorCentralityAnalysis implements ExecutableComponent {
 
 
 
-	private static final String AUTHOR = "Author";
+	public static final String AUTHOR = "Author";
 
 	// -------------------------------------------------------------------------
 
@@ -63,6 +63,13 @@ public class AuthorCentralityAnalysis implements ExecutableComponent {
 	)
 	public final static String OUTPUT_REPORT = "report";
 
+
+	@ComponentOutput(
+			description = "The graph generated.", 
+			name = "graph"
+	)
+	public final static String OUTPUT_GRAPH = "graph";
+	
 	// -------------------------------------------------------------------------
 
 
@@ -82,6 +89,7 @@ public class AuthorCentralityAnalysis implements ExecutableComponent {
 		AbstractRanker bc = computeBetweenness(g);
 		generateBCReport(sbReport,bc);
 
+		cc.pushDataComponentToOutput(OUTPUT_GRAPH, g);
 		cc.pushDataComponentToOutput(OUTPUT_REPORT, sbReport.toString());
 	}
 
