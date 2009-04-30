@@ -106,6 +106,7 @@ public class JungGraphToXML implements ExecutableComponent {
 		sb.append("\t</graph>\n");
 		sb.append("</graphml>");
 		
+		cc.pushDataComponentToOutput(OUTPUT_GRAPH, sb.toString());
 	}
 
 
