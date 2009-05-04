@@ -30,7 +30,7 @@ import edu.uci.ics.jung.utils.Pair;
 		baseURL = "meandre://seasr.org/components/zotero/", 
 		creator = "Xavier Llor&agrave", 
 		description = "Given a Jung graph generates the Graph ML that describes it.", 
-		name = "Author Hits Analysis", tags = "zotero, authors, social network analysis", 
+		name = "Jung Graph To XML", tags = "jung, graphml", 
 		mode = Mode.compute, firingPolicy = Component.FiringPolicy.all
 )
 //-------------------------------------------------------------------------
